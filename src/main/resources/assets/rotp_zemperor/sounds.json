@@ -1,0 +1,11 @@
+{
+
+  "hol_emp": {
+    "subtitle": "rotp_zemperor.subtitle.emp_user",
+    "sounds": [ "rotp_zemperor:user/hol_0","rotp_zemperor:user/hol_1"]
+  },
+
+  "void":{
+    "sounds": [ "rotp_zhp:void"]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "entity.rotp_zemperor.the_emperor": "The Emperor",
+  "stand.rotp_zemperor.the_emperor": "The Emperor",
+
+  "item.rotp_zemperor.emperor": "The Emperor",
+  
+  "action.rotp_zemperor.give_emp": "Summon Emperor",
+
+  "rotp_zemperor.subtitle.emp_user": "\"Emperor\""
+
+}
