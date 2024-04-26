@@ -25,6 +25,9 @@ public class InitSounds {
             ()->new SoundEvent(new ResourceLocation(RotpEmperorAddon.MOD_ID, "hol_emp"))
             );
 
+    public static final RegistryObject<SoundEvent> EMP_SHOT =SOUNDS.register("emp_shot",
+            ()->new SoundEvent(new ResourceLocation(RotpEmperorAddon.MOD_ID,"emp_shot")));
+
 
     static final OstSoundList HOL_OSST = new OstSoundList(new ResourceLocation(RotpEmperorAddon.MOD_ID, "emp_ost"), SOUNDS);
 }

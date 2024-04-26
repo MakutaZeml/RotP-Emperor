@@ -2,7 +2,7 @@ package com.zeml.rotp_zemperor.init;
 
 import com.github.standobyte.jojo.action.stand.StandEntityAction;
 import com.zeml.rotp_zemperor.RotpEmperorAddon;
-import com.zeml.rotp_zemperor.projectile.GiveEmperor;
+import com.zeml.rotp_zemperor.actions.GiveEmperor;
 import com.zeml.rotp_zemperor.entity.stand.stands.EmperorEntity;
 import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.power.impl.stand.stats.StandStats;
@@ -32,6 +32,8 @@ public class InitStands {
 
 
 
+
+
     public static final EntityStandRegistryObject<EntityStandType<StandStats>, StandEntityType<EmperorEntity>> STAND_EMPEROR =
             new EntityStandRegistryObject<>("the_emperor",
                     STANDS,
@@ -42,6 +44,7 @@ public class InitStands {
                             )
                             .rightClickHotbar(
                                     EMP_GIVE.get()
+
                             )
                             .defaultStats(StandStats.class, new StandStats.Builder()
                                     .tier(2)
