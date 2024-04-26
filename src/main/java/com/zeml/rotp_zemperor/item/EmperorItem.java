@@ -4,6 +4,8 @@ import com.github.standobyte.jojo.init.ModSounds;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.zeml.rotp_zemperor.entity.damaging.projectile.EmperorBullet;
 import com.zeml.rotp_zemperor.entity.stand.stands.EmperorEntity;
+import com.zeml.rotp_zemperor.init.InitItems;
+import com.zeml.rotp_zemperor.init.InitSounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -48,7 +50,7 @@ public class EmperorItem extends Item {
 
                         world.addFreshEntity(bullet);
                         standPower.consumeStamina(70);
-                        world.playSound(null, entity.blockPosition(), ModSounds.TOMMY_GUN_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
+                        world.playSound(null, entity.blockPosition(), InitSounds.EMP_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
                     }
                     if(t == 1){
                         entity.releaseUsingItem();
@@ -71,7 +73,7 @@ public class EmperorItem extends Item {
                         world.addFreshEntity(bullet);
                         standPower.consumeStamina(80);
 
-                        world.playSound(null, entity.blockPosition(), ModSounds.TOMMY_GUN_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
+                        world.playSound(null, entity.blockPosition(), InitSounds.EMP_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
                         entity.releaseUsingItem();
                     }
                 }
@@ -127,6 +129,7 @@ public class EmperorItem extends Item {
     }
 
     public static Stream<LivingEntity> targets(LivingEntity player) {
+
         return player.level.getEntitiesOfClass(LivingEntity.class,player.getBoundingBox().inflate(19.4,1,19.4),EntityPredicates.ENTITY_STILL_ALIVE).stream()
                 .filter(livingEntity -> livingEntity != player)
                 .filter(livingEntity -> !(livingEntity instanceof EmperorEntity))

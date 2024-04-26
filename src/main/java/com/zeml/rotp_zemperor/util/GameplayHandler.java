@@ -17,17 +17,23 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Mod.EventBusSubscriber(modid = RotpEmperorAddon.MOD_ID)
 public class GameplayHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onEntityJoinWorld(EntityJoinWorldEvent event){
-        Entity entity = event.getEntity();
-        if(entity instanceof ItemEntity){
-            ItemEntity entItem = (ItemEntity) entity;
-            if(entItem.getItem().getItem() == InitItems.EMPEROR.get()){
-                entity.remove();
+
+        if(!event.getEntity().level.isClientSide){
+            Entity entity = event.getEntity();
+            if(entity instanceof ItemEntity){
+                ItemEntity entItem = (ItemEntity) entity;
+                if(entItem.getItem().getItem() == InitItems.EMPEROR.get()){
+                    entity.remove();
+                }
             }
         }
     }
@@ -36,31 +42,36 @@ public class GameplayHandler {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onPlayerTick(TickEvent.PlayerTickEvent event){
         PlayerEntity player = event.player;
+        if(!player.level.isClientSide){
+            IStandPower.getStandPowerOptional(player).ifPresent(
+                    standPower -> {
+                        StandType<?> emp = InitStands.STAND_EMPEROR.getStandType();
+                        if(standPower.getType()!=emp){
+                            empInv(player);
+                        }else if (standPower.getStandManifestation() instanceof StandEntity){
+                            if(player.getItemInHand(Hand.MAIN_HAND).getItem() != InitItems.EMPEROR.get() && player.getItemInHand(Hand.OFF_HAND).getItem() != InitItems.EMPEROR.get()){
+                                ItemStack hand = player.getItemInHand(Hand.MAIN_HAND);
+                                if(!hand.isEmpty()){
+                                    ItemEntity ent = new ItemEntity(player.level,player.getX(),player.getY(),player.getZ(),hand);
+                                    player.level.addFreshEntity(ent);
+                                }
 
-
-        IStandPower.getStandPowerOptional(player).ifPresent(
-                standPower -> {
-                    StandType<?> emp = InitStands.STAND_EMPEROR.getStandType();
-                    if(standPower.getType()!=emp){
-                        empInv(player);
-                    }else if (standPower.getStandManifestation() instanceof StandEntity){
-                        if(player.getItemInHand(Hand.MAIN_HAND).getItem() != InitItems.EMPEROR.get() && player.getItemInHand(Hand.OFF_HAND).getItem() != InitItems.EMPEROR.get()){
-
-                            ItemStack hand = player.getItemInHand(Hand.MAIN_HAND);
-                            if(!hand.isEmpty()){
-                                ItemEntity ent = new ItemEntity(player.level,player.getX(),player.getY(),player.getZ(),hand);
-                                player.level.addFreshEntity(ent);
+                                ItemStack itemStack = new ItemStack(InitItems.EMPEROR.get(),1);
+                                player.setItemInHand(Hand.MAIN_HAND,itemStack);
+                                oneEmp(player);
                             }
 
-                            ItemStack itemStack = new ItemStack(InitItems.EMPEROR.get(),1);
-                            player.setItemInHand(Hand.MAIN_HAND,itemStack);
-                            oneEmp(player);
+                            dupEmp(player);
+
+
+                        }else {
+                            empInv(player);
                         }
-                    }else {
-                        empInv(player);
                     }
-                }
-        );
+            );
+        }
+
+
     }
 
 
@@ -93,5 +104,27 @@ public class GameplayHandler {
                 }
             }
         }
+    }
+
+
+    private static void dupEmp(PlayerEntity player){
+        int count = 0;
+        ArrayList<Integer> places = new ArrayList<>();
+
+        for (int i = 0; i < player.inventory.getContainerSize(); ++i) {
+            ItemStack inventoryStack = player.inventory.getItem(i);
+            if (inventoryStack.getItem() == InitItems.EMPEROR.get()) {
+                ++count;
+                places.add((Integer) i);
+            }
+            if(count>1){
+                for (Integer in:places) {
+                    int pl = (int) in;
+                    ItemStack dupliEmp = player.inventory.getItem(pl);
+                    dupliEmp.shrink(1);
+                }
+            }
+        }
+
     }
 }

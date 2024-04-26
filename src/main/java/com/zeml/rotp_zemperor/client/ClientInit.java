@@ -38,6 +38,8 @@ public class ClientInit {
                     new ResourceLocation(RotpEmperorAddon.MOD_ID, "stand_invisible"),
                     STAND_ITEM_INVISIBLE);
         });
+
+
     }
 
 }
