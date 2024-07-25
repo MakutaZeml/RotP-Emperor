@@ -23,6 +23,7 @@ import java.util.UUID;
 public class EmperorBullet extends ModdedProjectileEntity {
     private Optional<LivingEntity> homingTarget;
     LivingEntity shooter;
+    private float damage=4;
 
     public EmperorBullet(LivingEntity shooter, World world) {
         super(InitEntities.EMPEROR_BULLET.get(), shooter, world);
@@ -42,6 +43,9 @@ public class EmperorBullet extends ModdedProjectileEntity {
         return 100;
     }
 
+    public void setDamage(float damage){
+        this.damage = damage;
+    }
 
     @Override
     protected void moveProjectile(){
@@ -72,9 +76,9 @@ public class EmperorBullet extends ModdedProjectileEntity {
     @Override
     public float getBaseDamage() {
         if(distanceTo(shooter)<=12){
-            return 12*JojoModConfig.getCommonConfigInstance(false).standDamageMultiplier.get().floatValue();
+            return damage*JojoModConfig.getCommonConfigInstance(false).standDamageMultiplier.get().floatValue();
         }
-        return (18-distanceTo(shooter)/2)*JojoModConfig.getCommonConfigInstance(false).standDamageMultiplier.get().floatValue();
+        return (damage+6-distanceTo(shooter)/2)*JojoModConfig.getCommonConfigInstance(false).standDamageMultiplier.get().floatValue();
     }
 
     @Override

@@ -13,12 +13,14 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class InitSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, RotpEmperorAddon.MOD_ID);
 
-    public static final RegistryObject<SoundEvent> EMPEROR_SUMMON = ModSounds.STAND_SUMMON_DEFAULT;
+    public static final RegistryObject<SoundEvent> EMPEROR_SUMMON = SOUNDS.register("emp_summon",
+            ()->new SoundEvent(new ResourceLocation(RotpEmperorAddon.MOD_ID,"emp_summon")));
 
     public static final RegistryObject<SoundEvent> VOID =SOUNDS.register("void",
             ()->new SoundEvent(new ResourceLocation(RotpEmperorAddon.MOD_ID,"void")));
 
-    public static final RegistryObject<SoundEvent> EMPEROR_UNSUMMON = ModSounds.STAND_UNSUMMON_DEFAULT;
+    public static final RegistryObject<SoundEvent> EMPEROR_UNSUMMON = SOUNDS.register("emp_unsummon",
+            ()->new SoundEvent(new ResourceLocation(RotpEmperorAddon.MOD_ID,"emp_unsummon")));
 
 
     public static final RegistryObject<SoundEvent> USER_EMPEROR = SOUNDS.register("hol_emp",

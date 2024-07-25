@@ -8,6 +8,14 @@
     "subtitle": "rotp_zemperor.subtitle.emp_shot",
     "sounds": ["rotp_zemperor:stand/shot_1","rotp_zemperor:stand/shot_2"]
   },
+  "emp_summon": {
+    "subtitle": "rotp_zemperor.subtitle.emp_summon",
+    "sounds": ["rotp_zemperor:stand/summon"]
+  },
+  "emp_unsummon": {
+    "subtitle": "rotp_zemperor.subtitle.emp_umsummon",
+    "sounds": ["rotp_zemperor:stand/unsummon"]
+  },
 
   "void":{
     "sounds": [ "rotp_zhp:void"]

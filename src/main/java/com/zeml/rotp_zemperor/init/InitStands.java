@@ -3,6 +3,7 @@ package com.zeml.rotp_zemperor.init;
 import com.github.standobyte.jojo.action.stand.StandEntityAction;
 import com.zeml.rotp_zemperor.RotpEmperorAddon;
 import com.zeml.rotp_zemperor.actions.GiveEmperor;
+import com.zeml.rotp_zemperor.actions.TargetSelected;
 import com.zeml.rotp_zemperor.entity.stand.stands.EmperorEntity;
 import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.power.impl.stand.stats.StandStats;
@@ -31,7 +32,8 @@ public class InitStands {
             ()->new GiveEmperor(new StandEntityAction.Builder().staminaCost(1)));
 
 
-
+    public static final RegistryObject<StandEntityAction> TRAGET= ACTIONS.register("target",
+            ()->new TargetSelected(new StandEntityAction.Builder().staminaCost(1)));
 
 
     public static final EntityStandRegistryObject<EntityStandType<StandStats>, StandEntityType<EmperorEntity>> STAND_EMPEROR =
@@ -41,6 +43,8 @@ public class InitStands {
                             .color(0xC7DDE0)
                             .storyPartName(ModStandsInit.PART_3_NAME)
                             .leftClickHotbar(
+                                    TRAGET.get()
+
                             )
                             .rightClickHotbar(
                                     EMP_GIVE.get()

@@ -1,16 +1,19 @@
 package com.zeml.rotp_zemperor.item;
 
 import com.github.standobyte.jojo.init.ModSounds;
+import com.github.standobyte.jojo.init.ModStatusEffects;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.zeml.rotp_zemperor.entity.damaging.projectile.EmperorBullet;
 import com.zeml.rotp_zemperor.entity.stand.stands.EmperorEntity;
 import com.zeml.rotp_zemperor.init.InitItems;
 import com.zeml.rotp_zemperor.init.InitSounds;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.Hand;
@@ -33,6 +36,11 @@ public class EmperorItem extends Item {
     public void onUseTick(World world, LivingEntity entity, ItemStack stack, int remainingTicks) {
 
         IStandPower.getStandPowerOptional(entity).ifPresent(standPower -> {
+            float mulStamina = entity.hasEffect(ModStatusEffects.RESOLVE.get())?.5F:1F;
+            float damage =  entity.hasEffect(ModStatusEffects.RESOLVE.get())?(float)standPower.getType().getStats().getBasePower() :(float) standPower.getType().getStats().getBasePower()/2;
+            float speed = (float) standPower.getType().getStats().getBaseAttackSpeed();
+            System.out.println(speed);
+
             if(entity.isShiftKeyDown()){
 
                 int t = remainingTicks%13;
@@ -40,16 +48,28 @@ public class EmperorItem extends Item {
 
                 if(!world.isClientSide()){
 
-                    if(shotTick && standPower.getStamina()>=70){
+                    if(shotTick && standPower.getStamina()>=35*mulStamina){
                         EmperorBullet bullet = new EmperorBullet(entity, world);
-                        bullet.shootFromRotation(entity, 12, 0);
-
-                        if (targets(entity).findAny().isPresent()) {
-                            bullet.setTarget(getTarget(targets(entity), entity).get());
+                        bullet.shootFromRotation(entity, speed, 0);
+                        bullet.setDamage(damage);
+                        CompoundNBT nbt = stack.getOrCreateTag();
+                        if( Math.abs(nbt.getInt("mode")%3) ==1){
+                            if(targetsHostile(entity).findFirst().isPresent()){
+                                bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
+                            }
+                        } else if (Math.abs(nbt.getInt("mode")%3) ==2) {
+                            if(targetsPlayers(entity).findFirst().isPresent()){
+                                bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
+                            }
+                        }else {
+                            if (targets(entity).findAny().isPresent()) {
+                                bullet.setTarget(getTarget(targets(entity), entity).get());
+                            }
                         }
 
+
                         world.addFreshEntity(bullet);
-                        standPower.consumeStamina(70);
+                        standPower.consumeStamina(35*mulStamina);
                         world.playSound(null, entity.blockPosition(), InitSounds.EMP_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
                     }
                     if(t == 1){
@@ -62,16 +82,27 @@ public class EmperorItem extends Item {
                 boolean shotTick = t==4;
 
                 if(!world.isClientSide()){
-                    if(shotTick && standPower.getStamina() >=80){
+                    if(shotTick && standPower.getStamina() >=40*mulStamina){
                         EmperorBullet bullet = new EmperorBullet(entity, world);
-                        bullet.shootFromRotation(entity, 12, 0);
+                        bullet.shootFromRotation(entity, speed, 0);
 
-                        if (targets(entity).findAny().isPresent()) {
-                            bullet.setTarget(getTarget(targets(entity), entity).get());
+                        CompoundNBT nbt = stack.getOrCreateTag();
+                        if(Math.abs(nbt.getInt("mode")%3)==1){
+                            if(targetsHostile(entity).findFirst().isPresent()){
+                                bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
+                            }
+                        } else if (Math.abs(nbt.getInt("mode")%3)==2) {
+                            if(targetsPlayers(entity).findFirst().isPresent()){
+                                bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
+                            }
+                        }else {
+                            if (targets(entity).findAny().isPresent()) {
+                                bullet.setTarget(getTarget(targets(entity), entity).get());
+                            }
                         }
 
                         world.addFreshEntity(bullet);
-                        standPower.consumeStamina(80);
+                        standPower.consumeStamina(40*mulStamina);
 
                         world.playSound(null, entity.blockPosition(), InitSounds.EMP_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
                         entity.releaseUsingItem();
@@ -137,6 +168,24 @@ public class EmperorItem extends Item {
                 ;
     }
 
+    public static Stream<LivingEntity> targetsHostile(LivingEntity player) {
 
+        return player.level.getEntitiesOfClass(LivingEntity.class,player.getBoundingBox().inflate(19.4,1,19.4),EntityPredicates.ENTITY_STILL_ALIVE).stream()
+                .filter(livingEntity -> livingEntity != player)
+                .filter(livingEntity -> !(livingEntity instanceof EmperorEntity))
+                .filter(livingEntity -> !livingEntity.isAlliedTo(player))
+                .filter(livingEntity -> livingEntity instanceof MonsterEntity)
+                ;
+    }
+
+    public static Stream<LivingEntity> targetsPlayers(LivingEntity player) {
+
+        return player.level.getEntitiesOfClass(LivingEntity.class,player.getBoundingBox().inflate(19.4,1,19.4),EntityPredicates.ENTITY_STILL_ALIVE).stream()
+                .filter(livingEntity -> livingEntity != player)
+                .filter(livingEntity -> !(livingEntity instanceof EmperorEntity))
+                .filter(livingEntity -> !livingEntity.isAlliedTo(player))
+                .filter(livingEntity -> livingEntity instanceof PlayerEntity)
+                ;
+    }
 
 }
