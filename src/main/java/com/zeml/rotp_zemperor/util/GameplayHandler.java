@@ -4,6 +4,7 @@ import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.power.impl.stand.type.StandType;
 import com.zeml.rotp_zemperor.RotpEmperorAddon;
+import com.zeml.rotp_zemperor.capability.LivingDataProvider;
 import com.zeml.rotp_zemperor.init.InitItems;
 import com.zeml.rotp_zemperor.init.InitStands;
 import net.minecraft.entity.Entity;
@@ -59,7 +60,9 @@ public class GameplayHandler {
 
                                 ItemStack itemStack = new ItemStack(InitItems.EMPEROR.get(),1);
                                 CompoundNBT nbt =itemStack.getOrCreateTag();
-                                nbt.putInt("mode",0);
+                                player.getCapability(LivingDataProvider.CAPABILITY).ifPresent(livingData -> {
+                                    nbt.putInt("mode",livingData.getMode());
+                                });
                                 player.setItemInHand(Hand.MAIN_HAND,itemStack);
                                 oneEmp(player);
                             }

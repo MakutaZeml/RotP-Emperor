@@ -7,6 +7,7 @@ import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.general.LazySupplier;
+import com.zeml.rotp_zemperor.capability.LivingDataProvider;
 import com.zeml.rotp_zemperor.init.InitItems;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -44,6 +45,9 @@ public class TargetSelected extends StandEntityAction {
                 }else {
                     int newMode = nbt.getInt("mode")+(userPower.getUser().isShiftKeyDown()?-1:1);
                     nbt.putInt("mode",newMode);
+                    userPower.getUser().getCapability(LivingDataProvider.CAPABILITY).ifPresent(data->{
+                        data.setMode(newMode);
+                    });
                 }
             }
 

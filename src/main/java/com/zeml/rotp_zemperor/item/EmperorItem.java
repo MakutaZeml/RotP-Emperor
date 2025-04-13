@@ -1,5 +1,7 @@
 package com.zeml.rotp_zemperor.item;
 
+import com.github.standobyte.jojo.entity.itemprojectile.StandArrowEntity;
+import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.init.ModSounds;
 import com.github.standobyte.jojo.init.ModStatusEffects;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
@@ -26,7 +28,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class EmperorItem extends Item {
-
+    private float mulStamina = 1;
+    private float damage =6;
+    private float speed=12;
 
     public EmperorItem(Properties properties) {
         super(properties);
@@ -34,83 +38,81 @@ public class EmperorItem extends Item {
 
     @Override
     public void onUseTick(World world, LivingEntity entity, ItemStack stack, int remainingTicks) {
+        if(entity != null && entity.isAlive()){
+            IStandPower.getStandPowerOptional(entity).ifPresent(standPower -> {
+                this.mulStamina = entity.hasEffect(ModStatusEffects.RESOLVE.get())?.5F:1F;
+                this.damage =  entity.hasEffect(ModStatusEffects.RESOLVE.get())?(float)standPower.getType().getStats().getBasePower() :(float) standPower.getType().getStats().getBasePower()/2;
+                this.speed = (float) standPower.getType().getStats().getBaseAttackSpeed()/6;
+                if(entity.isShiftKeyDown()){
 
-        IStandPower.getStandPowerOptional(entity).ifPresent(standPower -> {
-            float mulStamina = entity.hasEffect(ModStatusEffects.RESOLVE.get())?.5F:1F;
-            float damage =  entity.hasEffect(ModStatusEffects.RESOLVE.get())?(float)standPower.getType().getStats().getBasePower() :(float) standPower.getType().getStats().getBasePower()/2;
-            float speed = (float) standPower.getType().getStats().getBaseAttackSpeed();
-            System.out.println(speed);
+                    int t = remainingTicks%13;
+                    boolean shotTick = t==1|| t==3||t==5|| t==7||t==9 || t==11;
 
-            if(entity.isShiftKeyDown()){
+                    if(!world.isClientSide()){
 
-                int t = remainingTicks%13;
-                boolean shotTick = t==1|| t==3||t==5|| t==7||t==9 || t==11;
-
-                if(!world.isClientSide()){
-
-                    if(shotTick && standPower.getStamina()>=35*mulStamina){
-                        EmperorBullet bullet = new EmperorBullet(entity, world);
-                        bullet.shootFromRotation(entity, speed, 0);
-                        bullet.setDamage(damage);
-                        CompoundNBT nbt = stack.getOrCreateTag();
-                        if( Math.abs(nbt.getInt("mode")%3) ==1){
-                            if(targetsHostile(entity).findFirst().isPresent()){
-                                bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
+                        if(shotTick && standPower.getStamina()>=35*this.mulStamina){
+                            EmperorBullet bullet = new EmperorBullet(entity, world);
+                            bullet.shootFromRotation(entity, this.speed, 0);
+                            bullet.setDamage(this.damage);
+                            CompoundNBT nbt = stack.getOrCreateTag();
+                            if( Math.abs(nbt.getInt("mode")%3) ==1){
+                                if(targetsHostile(entity).findFirst().isPresent()){
+                                    bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
+                                }
+                            } else if (Math.abs(nbt.getInt("mode")%3) ==2) {
+                                if(targetsPlayers(entity).findFirst().isPresent()){
+                                    bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
+                                }
+                            }else {
+                                if (targets(entity).findAny().isPresent()) {
+                                    bullet.setTarget(getTarget(targets(entity), entity).get());
+                                }
                             }
-                        } else if (Math.abs(nbt.getInt("mode")%3) ==2) {
-                            if(targetsPlayers(entity).findFirst().isPresent()){
-                                bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
-                            }
-                        }else {
-                            if (targets(entity).findAny().isPresent()) {
-                                bullet.setTarget(getTarget(targets(entity), entity).get());
-                            }
+
+
+                            world.addFreshEntity(bullet);
+                            standPower.consumeStamina(35*mulStamina);
+                            world.playSound(null, entity.blockPosition(), InitSounds.EMP_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
                         }
-
-
-                        world.addFreshEntity(bullet);
-                        standPower.consumeStamina(35*mulStamina);
-                        world.playSound(null, entity.blockPosition(), InitSounds.EMP_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
+                        if(t == 1){
+                            entity.releaseUsingItem();
+                        }
                     }
-                    if(t == 1){
-                        entity.releaseUsingItem();
+                }else{
+
+                    int t = remainingTicks%5;
+                    boolean shotTick = t==4;
+
+                    if(!world.isClientSide()){
+                        if(shotTick && standPower.getStamina() >=40*mulStamina){
+                            EmperorBullet bullet = new EmperorBullet(entity, world);
+                            bullet.shootFromRotation(entity, this.speed, 0);
+
+                            CompoundNBT nbt = stack.getOrCreateTag();
+                            if(Math.abs(nbt.getInt("mode")%3)==1){
+                                if(targetsHostile(entity).findFirst().isPresent()){
+                                    bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
+                                }
+                            } else if (Math.abs(nbt.getInt("mode")%3)==2) {
+                                if(targetsPlayers(entity).findFirst().isPresent()){
+                                    bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
+                                }
+                            }else {
+                                if (targets(entity).findAny().isPresent()) {
+                                    bullet.setTarget(getTarget(targets(entity), entity).get());
+                                }
+                            }
+
+                            world.addFreshEntity(bullet);
+                            standPower.consumeStamina(40*this.mulStamina);
+
+                            world.playSound(null, entity.blockPosition(), InitSounds.EMP_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
+                            entity.releaseUsingItem();
+                        }
                     }
                 }
-            }else{
-
-                int t = remainingTicks%5;
-                boolean shotTick = t==4;
-
-                if(!world.isClientSide()){
-                    if(shotTick && standPower.getStamina() >=40*mulStamina){
-                        EmperorBullet bullet = new EmperorBullet(entity, world);
-                        bullet.shootFromRotation(entity, speed, 0);
-
-                        CompoundNBT nbt = stack.getOrCreateTag();
-                        if(Math.abs(nbt.getInt("mode")%3)==1){
-                            if(targetsHostile(entity).findFirst().isPresent()){
-                                bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
-                            }
-                        } else if (Math.abs(nbt.getInt("mode")%3)==2) {
-                            if(targetsPlayers(entity).findFirst().isPresent()){
-                                bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
-                            }
-                        }else {
-                            if (targets(entity).findAny().isPresent()) {
-                                bullet.setTarget(getTarget(targets(entity), entity).get());
-                            }
-                        }
-
-                        world.addFreshEntity(bullet);
-                        standPower.consumeStamina(40*mulStamina);
-
-                        world.playSound(null, entity.blockPosition(), InitSounds.EMP_SHOT.get(), SoundCategory.PLAYERS, 1, 1);
-                        entity.releaseUsingItem();
-                    }
-                }
-            }
-        });
-
+            });
+        }
 
     }
 
@@ -182,9 +184,9 @@ public class EmperorItem extends Item {
 
         return player.level.getEntitiesOfClass(LivingEntity.class,player.getBoundingBox().inflate(19.4,1,19.4),EntityPredicates.ENTITY_STILL_ALIVE).stream()
                 .filter(livingEntity -> livingEntity != player)
+                .filter(livingEntity -> livingEntity instanceof PlayerEntity || livingEntity instanceof StandEntity)
                 .filter(livingEntity -> !(livingEntity instanceof EmperorEntity))
                 .filter(livingEntity -> !livingEntity.isAlliedTo(player))
-                .filter(livingEntity -> livingEntity instanceof PlayerEntity)
                 ;
     }
 

@@ -3,8 +3,10 @@ package com.zeml.rotp_zemperor.entity.damaging.projectile;
 import com.github.standobyte.jojo.JojoModConfig;
 import com.github.standobyte.jojo.action.ActionTarget;
 import com.github.standobyte.jojo.entity.damaging.projectile.ModdedProjectileEntity;
-import com.github.standobyte.jojo.init.ModParticles;
 import com.zeml.rotp_zemperor.init.InitEntities;
+import com.zeml.rotp_zemperor.network.AddonPackets;
+import com.zeml.rotp_zemperor.network.server.BulletTrailPacket;
+import com.zeml.rotp_zemperor.network.server.TrBulletTracePacket;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityType;
@@ -17,6 +19,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +28,9 @@ public class EmperorBullet extends ModdedProjectileEntity {
     private Optional<LivingEntity> homingTarget;
     LivingEntity shooter;
     private float damage=4;
+    public final List<Vector3d> tracePos = new LinkedList<>();
+
+    public Vector3d initialPos;
 
     public EmperorBullet(LivingEntity shooter, World world) {
         super(InitEntities.EMPEROR_BULLET.get(), shooter, world);
@@ -54,18 +61,11 @@ public class EmperorBullet extends ModdedProjectileEntity {
         if(homingTarget != null){
 
             homingTarget.ifPresent(target -> {
-
                     Vector3d targetPos = target.getBoundingBox().getCenter();
                     Vector3d vecToTarget = targetPos.subtract(this.position());
                     setDeltaMovement(vecToTarget.normalize().scale(this.getDeltaMovement().length()));
                     if (level.isClientSide()) {
-                        target.getBoundingBox().clip(position(), targetPos).ifPresent(pos -> {
-                            level.addParticle(ModParticles.CD_RESTORATION.get(),
-                                    pos.x + (random.nextDouble() - 0.5) * 0.25,
-                                    pos.y + (random.nextDouble() - 0.5) * 0.25,
-                                    pos.z + (random.nextDouble() - 0.5) * 0.25,
-                                    0, 0, 0);
-                        });
+                        setDeltaMovement(vecToTarget.normalize().scale(this.getDeltaMovement().length()));
                     }
 
             });
@@ -75,10 +75,14 @@ public class EmperorBullet extends ModdedProjectileEntity {
 
     @Override
     public float getBaseDamage() {
-        if(distanceTo(shooter)<=12){
-            return damage*JojoModConfig.getCommonConfigInstance(false).standDamageMultiplier.get().floatValue();
+        if(shooter != null){
+            if(distanceTo(shooter)<=12){
+                return damage*JojoModConfig.getCommonConfigInstance(false).standDamageMultiplier.get().floatValue();
+            }
+            return (damage+6-distanceTo(shooter)/2)*JojoModConfig.getCommonConfigInstance(false).standDamageMultiplier.get().floatValue();
+
         }
-        return (damage+6-distanceTo(shooter)/2)*JojoModConfig.getCommonConfigInstance(false).standDamageMultiplier.get().floatValue();
+        return 6;
     }
 
     @Override
@@ -95,17 +99,34 @@ public class EmperorBullet extends ModdedProjectileEntity {
     @Override
     protected void addAdditionalSaveData(CompoundNBT nbt) {
         super.addAdditionalSaveData(nbt);
-        homingTarget.ifPresent(target -> {
-            nbt.putUUID("HomingTarget", target.getUUID());
-        });
+        if(homingTarget.get() != null){
+            homingTarget.ifPresent(target -> {
+                nbt.putUUID("HomingTarget", target.getUUID());
+            });
+        }
     }
 
     @Override
     public void tick() {
         super.tick();
         setNoGravity(true);
-        if (this.shooter != null && this.distanceTo(shooter) > 30) {
+        if (this.shooter != null && this.distanceTo(this.shooter) > 30) {
             this.remove();
+        }
+        if(!level.isClientSide){
+            Vector3d pos = this.position();
+
+            boolean addPos = true;
+            if (this.tracePos.size() > 1) {
+                Vector3d lastPos = this.tracePos.get(this.tracePos.size() - 1);
+                addPos &= pos.distanceToSqr(lastPos) >= 0.05;
+            }
+            if (addPos) {
+                this.tracePos.add(pos);
+                AddonPackets.sendToClientsTracking(new TrBulletTracePacket(this.getId(),pos),this);
+            }
+            System.out.println(pos);
+            System.out.println(tracePos);
         }
     }
 
@@ -143,7 +164,6 @@ public class EmperorBullet extends ModdedProjectileEntity {
             super.breakProjectile(targetType, hitTarget);
         }
     }
-
 
 
 }

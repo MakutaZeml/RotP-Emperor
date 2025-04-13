@@ -1,7 +1,10 @@
 package com.zeml.rotp_zemperor;
 
+import com.zeml.rotp_zemperor.capability.CapabilityHandler;
 import com.zeml.rotp_zemperor.init.InitEntities;
 import com.zeml.rotp_zemperor.init.InitItems;
+import com.zeml.rotp_zemperor.network.AddonPackets;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +30,12 @@ public class RotpEmperorAddon {
         InitStands.STANDS.register(modEventBus);
         InitItems.ITEMS.register(modEventBus);
 
+        modEventBus.addListener(this::preInit);
+    }
+
+    private void preInit(FMLCommonSetupEvent event){
+        AddonPackets.init();
+        CapabilityHandler.commonSetupRegister();
     }
 
     public static Logger getLogger() {
