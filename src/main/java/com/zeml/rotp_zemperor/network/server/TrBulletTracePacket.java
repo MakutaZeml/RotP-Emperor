@@ -11,6 +11,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+@Deprecated
 public class TrBulletTracePacket {
     private final int entityID;
     private final double posX;
