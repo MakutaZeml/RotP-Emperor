@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -22,6 +23,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -60,15 +62,11 @@ public class EmperorBullet extends ModdedProjectileEntity {
     @Override
     protected void moveProjectile(){
         super.moveProjectile();
-
         Entity target = this.homingTarget.getEntity(level);
-        if(target != null){
+        if(target != null && !this.getDeflectedUsingReflection()){
             Vector3d targetPos = target.getBoundingBox().getCenter();
             Vector3d vecToTarget = targetPos.subtract(this.position());
             setDeltaMovement(vecToTarget.normalize().scale(this.getDeltaMovement().length()));
-//            if (level.isClientSide()) {
-//                setDeltaMovement(vecToTarget.normalize().scale(this.getDeltaMovement().length()));
-//            }
         }
 
     }
@@ -136,10 +134,7 @@ public class EmperorBullet extends ModdedProjectileEntity {
             }
             if (addPos) {
                 this.tracePos.add(pos);
-//                AddonPackets.sendToClientsTracking(new TrBulletTracePacket(this.getId(),pos),this);
             }
-//            System.out.println(pos);
-//            System.out.println(tracePos);
         }
     }
 
@@ -175,6 +170,18 @@ public class EmperorBullet extends ModdedProjectileEntity {
     protected void breakProjectile(ActionTarget.TargetType targetType, RayTraceResult hitTarget) {
         if (targetType != ActionTarget.TargetType.BLOCK) {
             super.breakProjectile(targetType, hitTarget);
+        }
+    }
+
+    public boolean getDeflectedUsingReflection() {
+        try {
+            Field field = ModdedProjectileEntity.class.getDeclaredField("IS_DEFLECTED");
+            field.setAccessible(true);
+            DataParameter<Boolean> deflectedParam = (DataParameter<Boolean>) field.get(this);
+            return this.getEntityData().get(deflectedParam);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

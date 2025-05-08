@@ -1,0 +1,22 @@
+{
+  "entity.rotp_zemperor.the_emperor": "皇帝",
+  "stand.rotp_zemperor.the_emperor": "皇帝",
+
+  "item.rotp_zemperor.emperor": "皇帝",
+
+  "action.rotp_zemperor.give_emp": "召唤皇帝",
+  "action.rotp_zemperor.target": "当前目标：%s",
+  "action.rotp_zemperor.stand_target": "设置目标",
+  "action.rotp_zemperor.no_stand_target": "删除指定目标",
+
+  "rotp_zemperor.type.random": "随机",
+  "rotp_zemperor.type.players": "玩家",
+  "rotp_zemperor.type.hostile": "敌对生物",
+  "rotp_zemperor.type.non": "只是一把枪，祝你开心",
+
+  "rotp_zemperor.subtitle.emp_shot": "皇帝射击",
+  "rotp_zemperor.subtitle.emp_user": "“皇帝”",
+  "rotp_zemperor.subtitle.emp_summon": "召唤皇帝",
+  "rotp_zemperor.subtitle.emp_umsummon": "收回皇帝"
+
+}

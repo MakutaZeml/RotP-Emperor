@@ -1,0 +1,22 @@
+{
+  "entity.rotp_zemperor.the_emperor": "El Emperador",
+  "stand.rotp_zemperor.the_emperor": "El Emperador",
+
+  "item.rotp_zemperor.emperor": "El Emperador",
+
+  "action.rotp_zemperor.give_emp": "Invocar Emperador",
+  "action.rotp_zemperor.target": "Objetivo actual: %s",
+  "action.rotp_zemperor.stand_target": "Seleccionar objetivo",
+  "action.rotp_zemperor.no_stand_target": "Quitar objetivo específico",
+
+  "rotp_zemperor.type.random": "Aleatorio",
+  "rotp_zemperor.type.players": "Jugadores",
+  "rotp_zemperor.type.hostile": "Mobs hostiles",
+  "rotp_zemperor.type.non": "Solo una pistola, espero que esten contentos",
+
+  "rotp_zemperor.subtitle.emp_shot": "Disparo del emperador",
+  "rotp_zemperor.subtitle.emp_user": "\"Emperador\"",
+  "rotp_zemperor.subtitle.emp_summon": "Invocación del Emperador",
+  "rotp_zemperor.subtitle.emp_umsummon": "Desinvocación del Emperado"
+
+}

@@ -3,6 +3,8 @@ package com.zeml.rotp_zemperor.init;
 import com.github.standobyte.jojo.action.stand.StandEntityAction;
 import com.zeml.rotp_zemperor.RotpEmperorAddon;
 import com.zeml.rotp_zemperor.actions.GiveEmperor;
+import com.zeml.rotp_zemperor.actions.RemoveStandTarget;
+import com.zeml.rotp_zemperor.actions.StandTarget;
 import com.zeml.rotp_zemperor.actions.TargetSelected;
 import com.zeml.rotp_zemperor.entity.stand.stands.EmperorEntity;
 import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
@@ -33,8 +35,14 @@ public class InitStands {
 
 
     public static final RegistryObject<StandEntityAction> TRAGET= ACTIONS.register("target",
-            ()->new TargetSelected(new StandEntityAction.Builder().staminaCost(1)));
+            ()->new TargetSelected(new StandEntityAction.Builder().staminaCost(1).resolveLevelToUnlock(1)));
 
+    public static final RegistryObject<StandEntityAction> STAND_TARGET = ACTIONS.register("stand_target",
+            ()-> new StandTarget(new StandEntityAction.Builder().resolveLevelToUnlock(3)));
+
+    public static final RegistryObject<StandEntityAction> NO_STAND_TARGET = ACTIONS.register("no_stand_target",
+            ()-> new RemoveStandTarget(new StandEntityAction.Builder())
+            );
 
     public static final EntityStandRegistryObject<EntityStandType<StandStats>, StandEntityType<EmperorEntity>> STAND_EMPEROR =
             new EntityStandRegistryObject<>("the_emperor",
@@ -43,7 +51,8 @@ public class InitStands {
                             .color(0xC7DDE0)
                             .storyPartName(ModStandsInit.PART_3_NAME)
                             .leftClickHotbar(
-                                    TRAGET.get()
+                                    TRAGET.get(),
+                                    STAND_TARGET.get()
 
                             )
                             .rightClickHotbar(
@@ -51,7 +60,7 @@ public class InitStands {
 
                             )
                             .defaultStats(StandStats.class, new StandStats.Builder()
-                                    .tier(2)
+                                    .tier(3)
                                     .power(12.0)
                                     .speed(12.0)
                                     .range(12.0)
@@ -65,7 +74,7 @@ public class InitStands {
                             .build(),
 
                     InitEntities.ENTITIES,
-                    () -> new StandEntityType<EmperorEntity>(EmperorEntity::new, 0.65F, 1.8F)
+                    () -> new StandEntityType<EmperorEntity>(EmperorEntity::new, 0F, 0F)
                             .summonSound(InitSounds.EMPEROR_SUMMON)
                             .unsummonSound(InitSounds.EMPEROR_UNSUMMON))
                     .withDefaultStandAttributes();

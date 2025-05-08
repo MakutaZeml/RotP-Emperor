@@ -12,6 +12,7 @@ import com.zeml.rotp_zemperor.init.InitSounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
@@ -23,6 +24,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -44,7 +46,6 @@ public class EmperorItem extends Item {
                 this.damage =  entity.hasEffect(ModStatusEffects.RESOLVE.get())?(float)standPower.getType().getStats().getBasePower() :(float) standPower.getType().getStats().getBasePower()/2;
                 this.speed = (float) standPower.getType().getStats().getBaseAttackSpeed()/6;
                 if(entity.isShiftKeyDown()){
-
                     int t = remainingTicks%13;
                     boolean shotTick = t==1|| t==3||t==5|| t==7||t==9 || t==11;
 
@@ -54,21 +55,16 @@ public class EmperorItem extends Item {
                             EmperorBullet bullet = new EmperorBullet(entity, world);
                             bullet.shootFromRotation(entity, this.speed, 0);
                             bullet.setDamage(this.damage);
+
                             CompoundNBT nbt = stack.getOrCreateTag();
-                            if( Math.abs(nbt.getInt("mode")%3) ==1){
-                                if(targetsHostile(entity).findFirst().isPresent()){
-                                    bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
-                                }
-                            } else if (Math.abs(nbt.getInt("mode")%3) ==2) {
-                                if(targetsPlayers(entity).findFirst().isPresent()){
-                                    bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
-                                }
-                            }else {
-                                if (targets(entity).findAny().isPresent()) {
-                                    bullet.setTarget(getTarget(targets(entity), entity).get());
+                            setTargetToBullet(bullet,entity,nbt);
+
+                            if(standPower.getStandManifestation() instanceof StandEntity){
+                                EmperorEntity emperorEntity = (EmperorEntity) standPower.getStandManifestation();
+                                if(emperorEntity.getTarget().isPresent()){
+                                    bullet.setTarget((LivingEntity) ((ServerWorld) world).getEntity(emperorEntity.getTarget().get()));
                                 }
                             }
-
 
                             world.addFreshEntity(bullet);
                             standPower.consumeStamina(35*mulStamina);
@@ -89,17 +85,12 @@ public class EmperorItem extends Item {
                             bullet.shootFromRotation(entity, this.speed, 0);
 
                             CompoundNBT nbt = stack.getOrCreateTag();
-                            if(Math.abs(nbt.getInt("mode")%3)==1){
-                                if(targetsHostile(entity).findFirst().isPresent()){
-                                    bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
-                                }
-                            } else if (Math.abs(nbt.getInt("mode")%3)==2) {
-                                if(targetsPlayers(entity).findFirst().isPresent()){
-                                    bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
-                                }
-                            }else {
-                                if (targets(entity).findAny().isPresent()) {
-                                    bullet.setTarget(getTarget(targets(entity), entity).get());
+                            setTargetToBullet(bullet,entity,nbt);
+
+                            if(standPower.getStandManifestation() instanceof StandEntity){
+                                EmperorEntity emperorEntity = (EmperorEntity) standPower.getStandManifestation();
+                                if(emperorEntity.getTarget().isPresent()){
+                                    bullet.setTarget((LivingEntity) ((ServerWorld) world).getEntity(emperorEntity.getTarget().get()));
                                 }
                             }
 
@@ -126,7 +117,24 @@ public class EmperorItem extends Item {
     }
 
 
-
+    private void setTargetToBullet(EmperorBullet bullet, LivingEntity entity ,CompoundNBT nbt){
+        switch (Math.abs(nbt.getInt("mode")%4)){
+            case 1:
+                if(targetsHostile(entity).findFirst().isPresent()){
+                    bullet.setTarget(getTarget(targetsHostile(entity),entity).get());
+                }
+                break;
+            case 2:
+                if(targetsPlayers(entity).findFirst().isPresent()){
+                    bullet.setTarget(getTarget(targetsPlayers(entity),entity).get());
+                }
+                break;
+            case 3:
+                if (targets(entity).findAny().isPresent()) {
+                    bullet.setTarget(getTarget(targets(entity), entity).get());
+                }
+        }
+    }
 
     @Override
     public void releaseUsing(ItemStack stack, World world, LivingEntity entity, int remainingTicks) {

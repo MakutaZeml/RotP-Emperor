@@ -1,7 +1,9 @@
 package com.zeml.rotp_zemperor.client;
 
 import com.github.standobyte.jojo.client.ClientUtil;
+import com.github.standobyte.jojo.client.render.armor.ArmorModelRegistry;
 import com.zeml.rotp_zemperor.RotpEmperorAddon;
+import com.zeml.rotp_zemperor.client.playeranim.anim.AddonPlayerAnimations;
 import com.zeml.rotp_zemperor.client.render.entity.renderer.damaging.projectile.EmperorBulletRenderer;
 import com.zeml.rotp_zemperor.client.render.entity.renderer.stand.HermitPurpleRenderer;
 import com.zeml.rotp_zemperor.init.AddonStands;
@@ -13,6 +15,7 @@ import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -40,6 +43,11 @@ public class ClientInit {
         });
 
 
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void loadCustomArmorModels(FMLClientSetupEvent event) {
+        event.enqueueWork(AddonPlayerAnimations::init);
     }
 
 }

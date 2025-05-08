@@ -8,6 +8,7 @@ import com.github.standobyte.jojo.entity.stand.StandEntityTask;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
 import com.github.standobyte.jojo.util.general.LazySupplier;
 import com.zeml.rotp_zemperor.capability.LivingDataProvider;
+import com.zeml.rotp_zemperor.entity.stand.stands.EmperorEntity;
 import com.zeml.rotp_zemperor.init.InitItems;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -24,6 +25,7 @@ public class TargetSelected extends StandEntityAction {
         super(builder);
     }
 
+
     @Override
     protected ActionConditionResult checkSpecificConditions(LivingEntity user, IStandPower power, ActionTarget target){
         if(user.getItemInHand(Hand.MAIN_HAND).getItem() == InitItems.EMPEROR.get() || user.getItemInHand(Hand.OFF_HAND).getItem() ==  InitItems.EMPEROR.get()){
@@ -32,6 +34,14 @@ public class TargetSelected extends StandEntityAction {
         return conditionMessage("no_emperor");
     }
 
+
+    @Override
+    protected ActionConditionResult checkStandConditions(StandEntity stand, IStandPower power, ActionTarget target) {
+        if(((EmperorEntity) stand).getTarget().isPresent()){
+            return ActionConditionResult.NEGATIVE;
+        }
+        return checkSpecificConditions(power.getUser(),power,target);
+    }
 
     @Override
     public void standPerform(World world, StandEntity standEntity, IStandPower userPower, StandEntityTask task){
@@ -58,6 +68,8 @@ public class TargetSelected extends StandEntityAction {
             new LazySupplier<>(() -> makeIconVariant(this, "_hostile"));
     private final LazySupplier<ResourceLocation> player =
             new LazySupplier<>(() -> makeIconVariant(this, "_player"));
+    private final LazySupplier<ResourceLocation> none =
+            new LazySupplier<>(() -> makeIconVariant(this, "_none"));
 
     @Override
     protected ResourceLocation getIconTexturePath(@Nullable IStandPower power) {
@@ -68,10 +80,10 @@ public class TargetSelected extends StandEntityAction {
                 if(itemStack.hasTag()){
                     CompoundNBT nbt = itemStack.getTag();
                     if(nbt != null && nbt.get("mode") != null){
-                        if(Math.abs(nbt.getInt("mode")%3)==1){
-                            return hostile.get();
-                        }else if (Math.abs(nbt.getInt("mode")%3)==2){
-                            return player.get() ;
+                        switch (Math.abs(nbt.getInt("mode")%4)){
+                            case 1: return hostile.get();
+                            case 2: return player.get();
+                            case 0: return none.get();
                         }
                     }
                 }
@@ -80,9 +92,14 @@ public class TargetSelected extends StandEntityAction {
         return super.getIconTexturePath(power);
     }
 
+    private static final TranslationTextComponent HOSTILE = new TranslationTextComponent("rotp_zemperor.type.hostile");
+    private static final TranslationTextComponent PLAYERS = new TranslationTextComponent("rotp_zemperor.type.players");
+    private static final TranslationTextComponent RANDOM = new TranslationTextComponent("rotp_zemperor.type.random");
+    private static final TranslationTextComponent NONE = new TranslationTextComponent("rotp_zemperor.type.non");
 
     @Override
     public IFormattableTextComponent getTranslatedName(IStandPower power, String key) {
+        TranslationTextComponent target = NONE;
         if(power.getUser() != null){
             Hand hand = power.getUser().getItemInHand(Hand.MAIN_HAND).getItem() == InitItems.EMPEROR.get()? Hand.MAIN_HAND:Hand.OFF_HAND;
             ItemStack itemStack =power.getUser().getItemInHand(hand);
@@ -90,15 +107,20 @@ public class TargetSelected extends StandEntityAction {
                 if(itemStack.hasTag()){
                     CompoundNBT nbt = itemStack.getTag();
                     if(nbt != null && nbt.get("mode") != null){
-                        if(Math.abs(nbt.getInt("mode")%3)==1){
-                            return new TranslationTextComponent( "action.rotp_zemperor.target_hostile");
-                        }else if (Math.abs(nbt.getInt("mode")%3)==2){
-                            return new TranslationTextComponent( "action.rotp_zemperor.target_player");
+                        switch (nbt.getInt("mode")%4){
+                            case 1:target = HOSTILE;
+                            break;
+                            case 2:target = PLAYERS;
+                            break;
+                            case 3: target = RANDOM;
+                            break;
+                            default: target = NONE;
+                            break;
                         }
                     }
                 }
             }
         }
-        return super.getTranslatedName(power, key);
+        return new TranslationTextComponent(key,target);
     }
 }

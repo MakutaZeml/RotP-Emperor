@@ -5,9 +5,14 @@
   "item.rotp_zemperor.emperor": "The Emperor",
   
   "action.rotp_zemperor.give_emp": "Summon Emperor",
-  "action.rotp_zemperor.target": "Currents Targets: Random",
-  "action.rotp_zemperor.target_hostile": "Currents Targets: Hostile Mobs",
-  "action.rotp_zemperor.target_player": "Currents Targets: Players",
+  "action.rotp_zemperor.target": "Currents Targets: %s",
+  "action.rotp_zemperor.stand_target": "Set Target",
+  "action.rotp_zemperor.no_stand_target": "Delete specific target",
+
+  "rotp_zemperor.type.random": "Random",
+  "rotp_zemperor.type.players": "Players",
+  "rotp_zemperor.type.hostile": "Hostile mobs",
+  "rotp_zemperor.type.non": "Just a Gun, I wish you are happy",
 
   "rotp_zemperor.subtitle.emp_shot": "Emperor Shot",
   "rotp_zemperor.subtitle.emp_user": "\"Emperor\"",
