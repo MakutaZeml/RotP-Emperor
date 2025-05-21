@@ -62,13 +62,15 @@ public class EmperorBullet extends ModdedProjectileEntity {
     @Override
     protected void moveProjectile(){
         super.moveProjectile();
-        Entity target = this.homingTarget.getEntity(level);
-        if(target != null && !this.getDeflectedUsingReflection()){
-            Vector3d targetPos = target.getBoundingBox().getCenter();
-            Vector3d vecToTarget = targetPos.subtract(this.position());
-            setDeltaMovement(vecToTarget.normalize().scale(this.getDeltaMovement().length()));
-        }
 
+        if(this.tickCount > 2){
+            Entity target = this.homingTarget.getEntity(level);
+            if(target != null && !this.getDeflectedUsingReflection()){
+                Vector3d targetPos = target.getBoundingBox().getCenter();
+                Vector3d vecToTarget = targetPos.subtract(this.position());
+                setDeltaMovement(vecToTarget.normalize().scale(this.getDeltaMovement().length()));
+            }
+        }
     }
 
     @Override
