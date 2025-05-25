@@ -6,11 +6,11 @@ import com.github.standobyte.jojo.client.render.entity.pose.ModelPose;
 import com.github.standobyte.jojo.client.render.entity.pose.RotationAngle;
 import net.minecraft.client.renderer.model.ModelRenderer;
 
-public class HermitPurpleModel  extends HumanoidStandModel<EmperorEntity> {
+public class EmperorModel extends HumanoidStandModel<EmperorEntity> {
 
 	final ModelRenderer spine_r1;
 
-	public HermitPurpleModel() {
+	public EmperorModel() {
 		super();
 
 		addHumanoidBaseBoxes(null);

@@ -1,11 +1,10 @@
 package com.zeml.rotp_zemperor.client;
 
 import com.github.standobyte.jojo.client.ClientUtil;
-import com.github.standobyte.jojo.client.render.armor.ArmorModelRegistry;
 import com.zeml.rotp_zemperor.RotpEmperorAddon;
 import com.zeml.rotp_zemperor.client.playeranim.anim.AddonPlayerAnimations;
 import com.zeml.rotp_zemperor.client.render.entity.renderer.damaging.projectile.EmperorBulletRenderer;
-import com.zeml.rotp_zemperor.client.render.entity.renderer.stand.HermitPurpleRenderer;
+import com.zeml.rotp_zemperor.client.render.entity.renderer.stand.EmperorRenderer;
 import com.zeml.rotp_zemperor.init.AddonStands;
 
 import com.zeml.rotp_zemperor.init.InitEntities;
@@ -32,7 +31,7 @@ public class ClientInit {
     public static void onFMLClientSetup(FMLClientSetupEvent event) {
         Minecraft mc = event.getMinecraftSupplier().get();;
 
-        RenderingRegistry.registerEntityRenderingHandler(AddonStands.EMPEROR_STAND.getEntityType(), HermitPurpleRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(AddonStands.EMPEROR_STAND.getEntityType(), EmperorRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(InitEntities.EMPEROR_BULLET.get(), EmperorBulletRenderer::new);
 
