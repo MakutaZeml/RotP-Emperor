@@ -5,6 +5,7 @@ import com.github.standobyte.jojo.entity.stand.StandEntity;
 import com.github.standobyte.jojo.init.ModSounds;
 import com.github.standobyte.jojo.init.ModStatusEffects;
 import com.github.standobyte.jojo.power.impl.stand.IStandPower;
+import com.github.standobyte.jojo.util.mc.MCUtil;
 import com.zeml.rotp_zemperor.entity.damaging.projectile.EmperorBullet;
 import com.zeml.rotp_zemperor.entity.stand.stands.EmperorEntity;
 import com.zeml.rotp_zemperor.init.InitItems;
@@ -28,6 +29,8 @@ import net.minecraft.world.server.ServerWorld;
 
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import static net.minecraft.world.GameType.SPECTATOR;
 
 public class EmperorItem extends Item {
     private float mulStamina = 1;
@@ -175,6 +178,8 @@ public class EmperorItem extends Item {
                 .filter(livingEntity -> livingEntity != player)
                 .filter(livingEntity -> !(livingEntity instanceof EmperorEntity))
                 .filter(livingEntity -> !livingEntity.isAlliedTo(player))
+                .filter(livingEntity -> !(livingEntity instanceof PlayerEntity && MCUtil.getGameMode((PlayerEntity) livingEntity) == SPECTATOR))
+
                 ;
     }
 
@@ -195,6 +200,7 @@ public class EmperorItem extends Item {
                 .filter(livingEntity -> livingEntity instanceof PlayerEntity || livingEntity instanceof StandEntity)
                 .filter(livingEntity -> !(livingEntity instanceof EmperorEntity))
                 .filter(livingEntity -> !livingEntity.isAlliedTo(player))
+                .filter(livingEntity -> !(livingEntity instanceof PlayerEntity && MCUtil.getGameMode((PlayerEntity) livingEntity) == SPECTATOR))
                 ;
     }
 
