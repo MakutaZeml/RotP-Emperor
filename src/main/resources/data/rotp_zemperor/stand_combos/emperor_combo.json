@@ -1,0 +1,32 @@
+{
+  "rotp_zemperor:the_emperor": {
+    "use_by_resolve": {
+      "0lvl": ["basic_combo"],
+      "1lvl": ["basic_combo", "barrage_combo"],
+      "2lvl": ["basic_combo", "barrage_combo"],
+      "3lvl": ["basic_combo", "barrage_combo","target"],
+      "4lvl": ["target_shot","target_barrage", "basic_combo","barrage_combo"]
+    },
+    "basic_combo": [
+      { "action": "rotp_zemperor:shoot_entity", "distance": "<=7"},
+      { "action": "rotp_zemperor:shoot_entity", "distance": "<=7"},
+      { "action": "rotp_zemperor:shoot_entity", "distance": "<=7"}
+    ],
+    "barrage_combo": [
+      { "action": "rotp_zemperor:barrage_shoot_entity", "distance": "<5"}
+    ],
+    "target": [
+      {"action": "rotp_zemperor:stand_target"}
+    ],
+    "target_shot": [
+      {"action": "rotp_zemperor:stand_target", "distance": "<=12"},
+      { "action": "rotp_zemperor:shoot_entity", "distance": "<=8"},
+      { "action": "rotp_zemperor:shoot_entity", "distance": "<=8"},
+      { "action": "rotp_zemperor:shoot_entity", "distance": "<=8"}
+    ],
+    "target_barrage": [
+      {"action": "rotp_zemperor:stand_target", "distance": "<=12"},
+      { "action": "rotp_zemperor:barrage_shoot_entity", "distance": "<=10"}
+    ]
+  }
+}

@@ -6,6 +6,8 @@ import com.zeml.rotp_zemperor.actions.GiveEmperor;
 import com.zeml.rotp_zemperor.actions.RemoveStandTarget;
 import com.zeml.rotp_zemperor.actions.StandTarget;
 import com.zeml.rotp_zemperor.actions.TargetSelected;
+import com.zeml.rotp_zemperor.actions.mobs.BarrageShootEntityAction;
+import com.zeml.rotp_zemperor.actions.mobs.ShootEntity;
 import com.zeml.rotp_zemperor.entity.stand.stands.EmperorEntity;
 import com.github.standobyte.jojo.init.power.stand.ModStandsInit;
 import com.github.standobyte.jojo.power.impl.stand.stats.StandStats;
@@ -44,6 +46,12 @@ public class InitStands {
             ()-> new RemoveStandTarget(new StandEntityAction.Builder())
             );
 
+    public static final RegistryObject<StandEntityAction> SHOOT_ENTITY = ACTIONS.register("shoot_entity",
+            ()-> new ShootEntity(new StandEntityAction.Builder().cooldown(10).staminaCost(35).resolveLevelToUnlock(0)));
+
+    public static final RegistryObject<StandEntityAction> SHOOT_BARRAGE_ENTITY = ACTIONS.register("barrage_shoot_entity",
+            ()-> new BarrageShootEntityAction(new StandEntityAction.Builder().cooldown(65).resolveLevelToUnlock(0).holdType(11)));
+
     public static final EntityStandRegistryObject<EntityStandType<StandStats>, StandEntityType<EmperorEntity>> STAND_EMPEROR =
             new EntityStandRegistryObject<>("the_emperor",
                     STANDS,
@@ -52,7 +60,9 @@ public class InitStands {
                             .storyPartName(ModStandsInit.PART_3_NAME)
                             .leftClickHotbar(
                                     TRAGET.get(),
-                                    STAND_TARGET.get()
+                                    STAND_TARGET.get(),
+                                    SHOOT_ENTITY.get(),
+                                    SHOOT_BARRAGE_ENTITY.get()
 
                             )
                             .rightClickHotbar(

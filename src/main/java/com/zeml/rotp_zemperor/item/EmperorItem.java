@@ -120,7 +120,7 @@ public class EmperorItem extends Item {
     }
 
 
-    private void setTargetToBullet(EmperorBullet bullet, LivingEntity entity ,CompoundNBT nbt){
+    public static void setTargetToBullet(EmperorBullet bullet, LivingEntity entity ,CompoundNBT nbt){
         switch (Math.abs(nbt.getInt("mode")%4)){
             case 1:
                 if(targetsHostile(entity).findFirst().isPresent()){
